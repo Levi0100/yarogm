@@ -1,4 +1,4 @@
-import { ActionRowComponents, Client } from 'eris'
+import { ActionRowComponents, Client, Message } from 'eris'
 import 'dotenv/config'
 import Embed from './structures/Embed'
 import Button from './structures/Button'
@@ -85,6 +85,64 @@ client.on('ready', () => {
       console.log(e)
     }
   }, 1000 * 7)
+})
+
+client.on("messageCreate", async(message: Message) => {
+  const command = message.content.split(" ")[0]
+  const prefix: string = "ygm"
+  const args = message.content.split(" ")
+  args.shift()
+
+  if (process.env.OWNER_IDS == undefined) return
+  if (!process.env.OWNER_IDS.includes(message.author.id)) return
+
+  if (command == prefix+"stop") {
+    const msg = await message.channel.createMessage({
+      content: "Processando requisição, aguarde...",
+      messageReference: { messageID: message.id }
+    })
+
+    await fetch('https://api.discloud.app/v2/app/716738171681112065/stop', {
+        method: "PUT",
+        headers: {
+          'api-token': process.env.DISCLOUD_API_TOKEN
+        }
+      })
+
+    msg.edit("O yaro foi parado.")
+  }
+
+  if (command == prefix+"restart") {
+    const msg = await message.channel.createMessage({
+      content: "Processando requisição, aguarde...",
+      messageReference: { messageID: message.id }
+    })
+
+    await fetch('https://api.discloud.app/v2/app/716738171681112065/restart', {
+        method: "PUT",
+        headers: {
+          'api-token': process.env.DISCLOUD_API_TOKEN
+        }
+      })
+
+    msg.edit("O yaro foi reiniciado.")
+  }
+
+  if (command == prefix+"start") {
+    const msg = await message.channel.createMessage({
+      content: "Processando requisição, aguarde...",
+      messageReference: { messageID: message.id }
+    })
+    
+    await fetch('https://api.discloud.app/v2/app/716738171681112065/start', {
+        method: "PUT",
+        headers: {
+          'api-token': process.env.DISCLOUD_API_TOKEN
+        }
+      })
+
+    msg.edit("O yaro foi iniciado.")
+  }
 })
 
 client.connect()
